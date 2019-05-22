@@ -29,7 +29,7 @@ import com.microsoft.azure.sqldb.spark.LoggingTrait
 import com.microsoft.azure.sqldb.spark.bulk.BulkCopyUtils
 import com.microsoft.azure.sqldb.spark.config.{Config, SqlDBConfig}
 import com.microsoft.sqlserver.jdbc.SQLServerBulkCopy
-import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.{DataFrame, Row, SaveMode}
 
 import scala.util.Try
 
@@ -48,7 +48,7 @@ private[spark] case class DataFrameFunctions[T](@transient dataFrame: DataFrame)
   def bulkCopyToSqlDB(config: Config, metadata: BulkCopyMetadata = null, createTable:Boolean = false): Unit = {
     // Ensuring the table exists in the DB already
     if(createTable) {
-      dataFrame.limit(0).write.sqlDB(config)
+      dataFrame.limit(0).write.mode(SaveMode.Overwrite).sqlDB(config)
     }
 
     val actualMetadata = if(metadata == null) {
